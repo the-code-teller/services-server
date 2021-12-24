@@ -1,5 +1,7 @@
 const express = require('express')
 const router = express.Router()
+const User = require('../models/user')
+const Provider = require('../models/provider')
 const authenticate = require('../middleware/authenticate')
 
 // About Us  
@@ -34,6 +36,16 @@ router.post('/contact', authenticate, async (req, res) => {
 
     } catch (error) {
         console.log(error);
+    }
+})
+
+// Get Provider Details [Parameter: Service]
+router.get('/gpbs', async (req, res) => {
+    try {
+        const providers = await Provider.find({service: "Full Stack Developer"}).select({name:1, _id:0})
+        res.json(providers)
+    } catch (err) {
+        res.send(err)
     }
 })
 

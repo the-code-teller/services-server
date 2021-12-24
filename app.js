@@ -12,6 +12,8 @@ require(path.join(__dirname, 'db/conn'))
 // Routes
 app.use(require('./routes/auth'))
 app.use(require('./routes/pages'))
+// app.use(require('./routes/user'))
+// app.use(require('./routes/provider'))
 
 // Server
 const PORT = 1000;
