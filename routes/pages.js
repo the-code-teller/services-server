@@ -39,14 +39,17 @@ router.post('/contact', authenticate, async (req, res) => {
     }
 })
 
-// Get Provider Details [Parameter: Service]
+// GetProviderByService [Parameter: Service] [Returns: Provider Details]
 router.get('/gpbs', async (req, res) => {
     try {
-        const providers = await Provider.find({service: "Full Stack Developer"}).select({name:1, _id:0})
+        service = req.body.service
+        const providers = await Provider.find({service}).select({name:1, _id:0})
         res.json(providers)
     } catch (err) {
         res.send(err)
     }
 })
+
+
 
 module.exports = router
