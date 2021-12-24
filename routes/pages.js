@@ -4,15 +4,18 @@ const User = require('../models/user')
 const Provider = require('../models/provider')
 const authenticate = require('../middleware/authenticate')
 
+
 // About Us  
 router.get('/about', authenticate, (req, res) => {
     res.send(req.rootUser)
 })
 
+
 // Get User Data for Contact Us and Homepage  
 router.get('/getdata', authenticate, (req, res) => {
     res.send(req.rootUser)
 })
+
 
 // Contact Us Page
 router.post('/contact', authenticate, async (req, res) => {
@@ -39,10 +42,16 @@ router.post('/contact', authenticate, async (req, res) => {
     }
 })
 
+
 // GetProviderByService [Parameter: Service] [Returns: Provider Details]
-router.get('/gpbs', async (req, res) => {
+router.get('/gpbs/:service', async (req, res) => {
     try {
-        service = req.body.service
+        service = req.params.service.split('-')
+        const toTitle = (item, index, arr) => {
+            arr[index] = item[0].toUpperCase() + item.slice(1)
+        }
+        service.forEach(toTitle);
+        service = service.join(' ')
         const providers = await Provider.find({service}).select({name:1, _id:0})
         res.json(providers)
     } catch (err) {
@@ -50,6 +59,57 @@ router.get('/gpbs', async (req, res) => {
     }
 })
 
+
+// Update User Profile
+router.post('/update-profile', async (req, res) => {
+    try {
+
+        const _id = req.body._id
+        const user = await User.findById(_id).select({name:1, _id:0})
+        if(user) {
+
+            const name = req.body.name || user.name
+            const service = req.body.service || user.service
+            
+            const update = await User.findByIdAndUpdate(_id, {
+                name, service
+            })
+            
+            res.send(update)
+        } else {
+            res.send("User not found")
+        }
+
+    } catch (err) {
+        res.send(err)
+    }
+})
+
+
+// Update Provider Profile
+router.post('/provider/update-profile', async (req, res) => {
+    try {
+
+        const _id = req.body._id
+        const user = await Provider.findById(_id).select({name:1, service:1, _id:0})
+        if(user) {
+
+            const name = req.body.name || user.name
+            const service = req.body.service || user.service
+            
+            const update = await Provider.findByIdAndUpdate(_id, {
+                name, service
+            })
+            
+            res.send(update)
+        } else {
+            res.send("User not found")
+        }
+
+    } catch (err) {
+        res.send(err)
+    }
+})
 
 
 module.exports = router
