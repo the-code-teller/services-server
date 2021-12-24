@@ -2,23 +2,21 @@ const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs/dist/bcrypt')
 
+
 const userSchema = new mongoose.Schema(
     {
         name: String,
         email: String,
         password: String,
-        phone: Number,
-        date: {
-            type: Date,
-            default: Date.now
-        },
+        service: String,
         tokens: [
             {
-                token: String
+                token: String,
             }
         ]
     }
 )
+
 
 // Pasword encryption
 userSchema.pre('save', async function(next) {
@@ -41,4 +39,4 @@ userSchema.methods.generateAuthToken = async function () {
     }
 }
 
-module.exports = mongoose.model('user', userSchema)
+module.exports = mongoose.model('provider', userSchema)
