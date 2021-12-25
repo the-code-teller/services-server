@@ -42,6 +42,14 @@ router.post('/contact', authenticate, async (req, res) => {
     }
 })
 
+
+// Profile Page
+router.get('/profile', async (req, res) => {
+    const user = await User.findById().select({name:1, email:1})
+    res.send(user)
+})
+
+
 // Get List of Services Available
 router.get('/los', async (req, res) => {
     try {
@@ -59,8 +67,8 @@ router.get('/los', async (req, res) => {
 })
 
 
-// GetProviderByService [Parameter: Service] [Returns: Provider Details]
-router.get('/gpbs/:service', async (req, res) => {
+// Provider By Service [Parameter: Service] [Returns: Provider Details]
+router.get('/pbs/:service', async (req, res) => {
     try {
         service = req.params.service.split('-')
         const toTitle = (item, index, arr) => {
@@ -100,9 +108,10 @@ router.post('/update-profile', async (req, res) => {
             
             const update = await User.findByIdAndUpdate(_id, {
                 name, service
-            })
-            
-            res.send(update)
+            }, {new: true})
+
+
+            res.send(update.name)
         } else {
             res.send("User not found")
         }
