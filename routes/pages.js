@@ -42,6 +42,21 @@ router.post('/contact', authenticate, async (req, res) => {
     }
 })
 
+// Get List of Services Available
+router.get('/los', async (req, res) => {
+    try {
+        const services = await Provider.find().select({service:1, _id:0})
+        // Function to extract service values from the list
+        const getList = (item, index, arr) => {
+            arr[index] = item['service']
+        }
+        services.forEach(getList)
+        // Remove duplicate values from the list and send
+        res.send([...new Set(services)])
+    } catch (err) {
+        res.send(err)
+    }
+})
 
 // GetProviderByService [Parameter: Service] [Returns: Provider Details]
 router.get('/gpbs/:service', async (req, res) => {
