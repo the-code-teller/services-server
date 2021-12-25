@@ -58,6 +58,7 @@ router.get('/los', async (req, res) => {
     }
 })
 
+
 // GetProviderByService [Parameter: Service] [Returns: Provider Details]
 router.get('/gpbs/:service', async (req, res) => {
     try {
@@ -68,6 +69,17 @@ router.get('/gpbs/:service', async (req, res) => {
         service.forEach(toTitle);
         service = service.join(' ')
         const providers = await Provider.find({service}).select({name:1, _id:0})
+        res.json(providers)
+    } catch (err) {
+        res.send(err)
+    }
+})
+
+
+// Get All Service Providers with details
+router.get('/asp', async (req, res) => {
+    try {
+        const providers = await Provider.find().select({name:1, service:1, _id:0})
         res.json(providers)
     } catch (err) {
         res.send(err)
