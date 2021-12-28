@@ -39,4 +39,9 @@ userSchema.methods.generateAuthToken = async function () {
     }
 }
 
-module.exports = mongoose.model('provider', userSchema)
+
+// Creating Provider Model: Parameters(Collection_name, Schema_name)
+userModel = mongoose.model('provider', userSchema)
+
+
+module.exports = userModel

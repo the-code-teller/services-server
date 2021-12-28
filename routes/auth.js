@@ -3,30 +3,8 @@ const router = express.Router()
 const User = require('../models/user')
 const Provider = require('../models/provider')
 const bcrypt = require('bcryptjs')
-const authenticate = require('../middleware/authenticate')
+// const authenticate = require('../middleware/authenticate')
 
-
-// Get all Data from the collection "user"
-router.get('/', async(req, res) => {
-    try{
-        const users = await User.find()
-        res.json(users)
-    }
-    catch(err){
-        res.send('Error', err)
-    }
-})
-
-// Get all Data from the collection "provider"
-router.get('/provider', async(req, res) => {
-    try{
-        const users = await Provider.find()
-        res.json(users)
-    }
-    catch(err){
-        res.send('Error', err)
-    }
-})
 
 // Register User
 router.post('/register', async(req, res) => {
@@ -34,26 +12,27 @@ router.post('/register', async(req, res) => {
     const {name, email, password, cpassword} = req.body
 
     if(!name || !email || !password || !cpassword){
-        return res.status(422).json({error: "Please fill fields properly"})
+        return res.status(422).json({error: "Please fill all required (*) fields"})
     }
 
     try {
-        const userExists = await User.findOne({email: email})
+        const userExists = await User.findOne({email: email}).select({_id:1})
+        console.log(userExists);
         
         if(userExists) {
             return res.status(422).json({error: 'Email already exists'})
         } else if(password != cpassword){
-            return res.status(422).json({error: 'Passwords do not match'})
+            return res.status(422).json({error: 'Passwords do not match'}) 
         } else{   
             const user = new User({name, email, password, cpassword})
             
             await user.save()
             
-            res.status(201).json({message: "User Registrartion Successfull"})
+            res.status(201).json({message: "User Registration Successfull"})
         }
 
     } catch(err) {
-        console.log(err)
+        res.status(500).send(err.message.slice(23))
     }
 })
 
@@ -67,18 +46,18 @@ router.post('/provider/register', async(req, res) => {
     }
 
     try {
-        const userExists = await Provider.findOne({email: email})
+        const userExists = await Provider.findOne({email: email}).select({_id:1})
         
         if(userExists) {
             return res.status(422).json({error: 'Email already exists'})
         } else if(password != cpassword){
             return res.status(422).json({error: 'Passwords do not match'})
         } else{   
-            const user = new Provider({name, email, service, password, cpassword})
+            const user = new Provider({name, email, service, password})
             
             await user.save()
             
-            res.status(201).json({message: "Provider Registrartion Successfull"})
+            res.status(201).json({message: "Provider Registration Successfull"})
         }
 
     } catch(err) {
@@ -95,16 +74,15 @@ router.post('/login', async(req, res) => {
 
         // Checking if the fields are empty
         if(!email || !password) {
-            res.status(422).json("All fields are mandatory to fill")
+            res.status(422).json("Please fill all required fields")
         }
 
         // Checking Email
-        const userLogin = await User.findOne({ email: email})
+        const userLogin = await User.findOne({ email: email}).select({password:1, tokens:1})
 
         if(userLogin){
             const isMatch = await bcrypt.compare(password, userLogin.password)
             
-
             if(!isMatch){
                 res.status(422).json({error: "Invalid credentials"})
             } else{
@@ -113,7 +91,7 @@ router.post('/login', async(req, res) => {
                 let authToken = await userLogin.generateAuthToken()
             
                 res.cookie("jwtUser", authToken, {
-                    expires: new Date(Date.now() + 2592000000),
+                    expires: new Date(Date.now() + 25892000000),
                     httpOnly: true
                 })
 
@@ -126,7 +104,7 @@ router.post('/login', async(req, res) => {
         }
     }
     catch(err) {
-        res.send(err)
+        res.status(400).send(err)
     }
 })
 
@@ -177,14 +155,14 @@ router.post('/provider/login', async(req, res) => {
 // Logout User
 router.get('/logout', (req, res) => {
     res.clearCookie('jwtUser', {path: '/'})
-    console.log("User logged out");
+    // console.log("User logged out");
     res.status(200).send('User Logged out')
 })
 
 // Logout Provider
 router.get('provider/logout', (req, res) => {
     res.clearCookie('jwtProvider', {path: '/'})
-    console.log("Provider logged out");
+    // console.log("Provider logged out");
     res.status(200).send('Provider Logged out')
 })
 

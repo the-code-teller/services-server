@@ -4,9 +4,15 @@ const bcrypt = require('bcryptjs/dist/bcrypt')
 
 const userSchema = new mongoose.Schema(
     {
-        name: String,
-        email: String,
-        password: String,
+        name: {
+            type: String
+        },
+        email:  {
+            type: String
+        },
+        password:  {
+            type: String
+        },
         date: {
             type: Date,
             default: Date.now
@@ -19,7 +25,8 @@ const userSchema = new mongoose.Schema(
     }
 )
 
-// Pasword encryption
+
+// Pasword encryption for register
 userSchema.pre('save', async function(next) {
     if(this.isModified('password')){
         this.password = await bcrypt.hash(this.password, 12)
@@ -27,10 +34,11 @@ userSchema.pre('save', async function(next) {
     next()
 })
 
-// Generating Auth Token
+
+// Generating Auth Token at Login
 userSchema.methods.generateAuthToken = async function () {
     try{
-        const token = jwt.sign({ _id: this._id }, 'ROBERTDOWNYJUNIOR')
+        const token = jwt.sign({ _id: this._id }, process.env.SECRET_KEY)
         this.tokens = this.tokens.concat({ token: token })
         await this.save()
         return token
@@ -40,4 +48,8 @@ userSchema.methods.generateAuthToken = async function () {
     }
 }
 
-module.exports = mongoose.model('user', userSchema)
+// Creating User Model: Parameters(Collection_name, Schema_name)
+userModel = mongoose.model('user', userSchema)
+
+
+module.exports = userModel
