@@ -3,11 +3,11 @@ const User = require('../models/user')
 
 const Authenticate = async (req, res, next) => {
     try {
-        const token = req.cookies['jwtoken']
+        const token = req.cookies['jwt']
         
         if(token) {
             
-            const verifyToken = jwt.verify(token, "ROBERTDOWNYJUNIOR")
+            const verifyToken = jwt.verify(token, "GANGADHARHISHAKTIMAANHAI")
             
             const rootUser = await User.findOne({ _id: verifyToken._id, "tokens.token": token})
             

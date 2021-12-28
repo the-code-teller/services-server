@@ -10,6 +10,7 @@ const bcrypt = require('bcryptjs')
 router.post('/register', async(req, res) => {
 
     const {name, email, password, cpassword} = req.body
+    console.log(req.body);
 
     if(!name || !email || !password || !cpassword){
         return res.status(422).json({error: "Please fill all required (*) fields"})
@@ -17,7 +18,6 @@ router.post('/register', async(req, res) => {
 
     try {
         const userExists = await User.findOne({email: email}).select({_id:1})
-        console.log(userExists);
         
         if(userExists) {
             return res.status(422).json({error: 'Email already exists'})
@@ -28,11 +28,11 @@ router.post('/register', async(req, res) => {
             
             await user.save()
             
-            res.status(201).json({message: "User Registration Successfull"})
+            res.status(201).render('login')
         }
 
     } catch(err) {
-        res.status(500).send(err.message.slice(23))
+        res.status(500).send(err)
     }
 })
 
@@ -95,7 +95,9 @@ router.post('/login', async(req, res) => {
                     httpOnly: true
                 })
 
-                res.status(201).json({message: "User Logged In"})
+                res.status(201).render('home', {
+                    message: "Login Successful"
+                })
             }
 
         }

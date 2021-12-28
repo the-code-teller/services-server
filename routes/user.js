@@ -48,6 +48,18 @@ router.get('/asp', async (req, res) => {
     }
 })
 
+// Get all details of a particular service provider
+router.get('/adofsp/:id', async (req, res) => {
+    try {
+        _id = req.params.id
+        const providers = await Provider.findById({_id}).select({tokens:0, _v:0})
+        console.log(providers);
+        res.status(200).json(providers)
+    } catch (err) {
+        res.status(500).send(err)
+    }
+})
+
 
 // Update User Profile
 router.post('/update-profile', async (req, res) => {

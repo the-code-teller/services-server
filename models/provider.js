@@ -5,10 +5,28 @@ const bcrypt = require('bcryptjs/dist/bcrypt')
 
 const userSchema = new mongoose.Schema(
     {
-        name: String,
-        email: String,
-        password: String,
-        service: String,
+        name: {
+            type: String,
+            required: true
+        },
+        email:  {
+            type: String,
+            required: true
+        },
+        password:  {
+            type: String,
+            required: true
+        },
+        service: {
+            type: String,
+            required: true
+        },
+        phone: Number,
+        address: String,
+        date: {
+            type: Date,
+            default: Date.now
+        },
         tokens: [
             {
                 token: String,

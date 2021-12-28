@@ -2,6 +2,15 @@ const express = require('express')
 const router = express.Router()
 const User = require('../models/user')
 const Provider = require('../models/provider')
+const async = require('hbs/lib/async')
+const Authenticate = require('../middleware/authenticate')
+const jwt = require('jsonwebtoken')
+
+
+// Get Details of a particular Service Provider
+router.get('/getDetailsProvider', async (req, res) => {
+    
+})
 
 
 // Update Provider Profile
